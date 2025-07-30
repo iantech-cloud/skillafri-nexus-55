@@ -20,6 +20,7 @@ import FreelancerRegister from "./pages/auth/FreelancerRegister";
 import StudentRegister from "./pages/auth/StudentRegister";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import MagicLinkRegister from "./pages/auth/MagicLinkRegister";
+import AuthCallback from "./pages/auth/AuthCallback";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import ContentManagement from "./pages/admin/ContentManagement";
@@ -64,6 +65,7 @@ const App = () => {
               <Route path="/auth/register/freelancer" element={<FreelancerRegister />} />
               <Route path="/auth/register/student" element={<StudentRegister />} />
               <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               
               {/* User Dashboards */}
               <Route 

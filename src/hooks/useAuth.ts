@@ -1,5 +1,7 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { User, AuthState, LoginCredentials, RegisterData, UserRole } from '@/types/auth';
+import { supabase } from '@/lib/supabase';
+import { authService } from '@/lib/authService';
 
 const AuthContext = createContext<{
   auth: AuthState;
@@ -61,7 +63,10 @@ export const useAuthState = () => {
 
 
   const sendMagicLink = async (email: string) => {
-    throw new Error('Magic link authentication requires Supabase integration. Click the Supabase button to connect.');
+    const result = await authService.sendMagicLink(email);
+    if (result.error) {
+      throw new Error(result.error);
+    }
   };
 
   const login = async (credentials: LoginCredentials) => {

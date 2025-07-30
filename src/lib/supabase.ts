@@ -1,11 +1,9 @@
-// Supabase client setup - will be activated when Supabase integration is enabled
-// This file is ready for Supabase connection
-
+// Supabase client setup with manual configuration
 import { createClient } from '@supabase/supabase-js'
 
-// These will be automatically populated when Supabase integration is active
-const supabaseUrl = process.env.VITE_SUPABASE_URL || ''
-const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || ''
+// Manual Supabase configuration
+const supabaseUrl = 'https://hchgpwsiamzdqyltljig.supabase.co'
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjaGdwd3NpYW16ZHF5bHRsamlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM4NzE4NjUsImV4cCI6MjA2OTQ0Nzg2NX0.8Nn_2UjJLnAzPo6YO68K1Mxuu78ipFZ_YyibkSe1veY'
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 

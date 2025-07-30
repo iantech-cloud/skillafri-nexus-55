@@ -56,15 +56,19 @@ export const authService = {
   },
 
   async sendMagicLink(email: string): Promise<{ error: string | null }> {
-    // TODO: Implement with Supabase Auth
-    // const { error } = await supabase.auth.signInWithOtp({
-    //   email: email,
-    //   options: {
-    //     emailRedirectTo: `${window.location.origin}/auth/callback`
-    //   }
-    // })
-    
-    throw new Error('Magic link authentication requires Supabase integration.')
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email,
+        options: {
+          emailRedirectTo: `http://skillafrica.online/auth/callback`
+        }
+      })
+      
+      if (error) throw error
+      return { error: null }
+    } catch (error: any) {
+      return { error: error.message }
+    }
   },
 
   async resetPassword(email: string): Promise<{ error: string | null }> {
@@ -78,13 +82,14 @@ export const authService = {
 
   // Listen to auth state changes
   onAuthStateChange(callback: (user: User | null) => void) {
-    // TODO: Implement with Supabase Auth
-    // return supabase.auth.onAuthStateChange((event, session) => {
-    //   callback(session?.user ? transformSupabaseUser(session.user) : null)
-    // })
-    
-    // For now, return empty subscription
-    return { data: { subscription: { unsubscribe: () => {} } } }
+    return supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        const user = transformSupabaseUser(session.user);
+        callback(user);
+      } else {
+        callback(null);
+      }
+    });
   }
 }
 
