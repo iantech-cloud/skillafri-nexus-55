@@ -3,56 +3,85 @@ import { LoginCredentials, RegisterData, User, UserRole } from '@/types/auth'
 import { supabase } from './supabase'
 
 export const authService = {
-  // These functions will use Supabase auth when integration is active
-  
   async signUp(data: RegisterData): Promise<{ user: User | null; error: string | null }> {
-    // TODO: Implement with Supabase Auth
-    // const { data: authData, error } = await supabase.auth.signUp({
-    //   email: data.email,
-    //   password: data.password,
-    //   options: {
-    //     data: {
-    //       first_name: data.firstName,
-    //       last_name: data.lastName,
-    //       role: data.role,
-    //       company: data.company,
-    //       skills: data.skills,
-    //       university: data.university,
-    //       phone_number: data.phoneNumber,
-    //       country: data.country
-    //     }
-    //   }
-    // })
-    
-    throw new Error('Authentication requires Supabase integration. Click the Supabase button to connect.')
+    try {
+      const { data: authData, error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          emailRedirectTo: `http://skillafrica.online/auth/callback`,
+          data: {
+            first_name: data.firstName,
+            last_name: data.lastName,
+            role: data.role,
+            company: data.company,
+            skills: data.skills,
+            university: data.university,
+            phone_number: data.phoneNumber,
+            country: data.country,
+            profile_completed: false
+          }
+        }
+      })
+      
+      if (error) throw error
+      
+      if (authData?.user) {
+        const user = transformSupabaseUser(authData.user)
+        return { user, error: null }
+      }
+      
+      return { user: null, error: null }
+    } catch (error: any) {
+      return { user: null, error: error.message }
+    }
   },
 
   async signIn(credentials: LoginCredentials): Promise<{ user: User | null; error: string | null }> {
-    // TODO: Implement with Supabase Auth
-    // const { data, error } = await supabase.auth.signInWithPassword({
-    //   email: credentials.email,
-    //   password: credentials.password
-    // })
-    
-    throw new Error('Authentication requires Supabase integration. Click the Supabase button to connect.')
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: credentials.email,
+        password: credentials.password
+      })
+      
+      if (error) throw error
+      
+      if (data?.user) {
+        const user = transformSupabaseUser(data.user)
+        return { user, error: null }
+      }
+      
+      return { user: null, error: null }
+    } catch (error: any) {
+      return { user: null, error: error.message }
+    }
   },
 
   async signOut(): Promise<{ error: string | null }> {
-    // TODO: Implement with Supabase Auth
-    // const { error } = await supabase.auth.signOut()
-    
-    // For now, just clear local storage
-    localStorage.removeItem('user')
-    return { error: null }
+    try {
+      const { error } = await supabase.auth.signOut()
+      localStorage.removeItem('user')
+      return { error: error?.message || null }
+    } catch (error: any) {
+      return { error: error.message }
+    }
   },
 
   async getCurrentUser(): Promise<User | null> {
-    // TODO: Implement with Supabase Auth
-    // const { data: { user }, error } = await supabase.auth.getUser()
-    
-    // For now, check localStorage
-    const storedUser = localStorage.getItem('user')
-    return storedUser ? JSON.parse(storedUser) : null
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser()
+      
+      if (error || !user) {
+        // Fallback to localStorage
+        const storedUser = localStorage.getItem('user')
+        return storedUser ? JSON.parse(storedUser) : null
+      }
+      
+      return transformSupabaseUser(user)
+    } catch (error) {
+      const storedUser = localStorage.getItem('user')
+      return storedUser ? JSON.parse(storedUser) : null
+    }
   },
 
   async sendMagicLink(email: string): Promise<{ error: string | null }> {
@@ -71,13 +100,53 @@ export const authService = {
     }
   },
 
+  async sendMagicLinkWithRole(email: string, role: string): Promise<{ error: string | null }> {
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email,
+        options: {
+          emailRedirectTo: `http://skillafrica.online/auth/callback`,
+          data: {
+            role: role,
+            profile_completed: false
+          }
+        }
+      })
+      
+      if (error) throw error
+      return { error: null }
+    } catch (error: any) {
+      return { error: error.message }
+    }
+  },
+
+  async updateProfile(updates: Partial<User>): Promise<{ error: string | null }> {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          ...updates,
+          profile_completed: true
+        }
+      })
+      
+      if (error) throw error
+      return { error: null }
+    } catch (error: any) {
+      return { error: error.message }
+    }
+  },
+
   async resetPassword(email: string): Promise<{ error: string | null }> {
-    // TODO: Implement with Supabase Auth
-    // const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    //   redirectTo: `${window.location.origin}/auth/reset-password`
-    // })
-    
-    throw new Error('Password reset requires Supabase integration.')
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `http://skillafrica.online/auth/reset-password`
+      })
+      
+      if (error) throw error
+      return { error: null }
+    } catch (error: any) {
+      return { error: error.message }
+    }
   },
 
   // Listen to auth state changes

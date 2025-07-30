@@ -70,15 +70,38 @@ export const useAuthState = () => {
   };
 
   const login = async (credentials: LoginCredentials) => {
-    throw new Error('Login requires Supabase integration. Click the Supabase button to connect.');
+    const result = await authService.signIn(credentials);
+    if (result.error) {
+      throw new Error(result.error);
+    }
+    if (result.user) {
+      setAuth({
+        user: result.user,
+        isAuthenticated: true,
+        isLoading: false
+      });
+    }
   };
 
   const registerWithMagicLink = async (email: string, role: string) => {
-    throw new Error('Registration requires Supabase integration. Click the Supabase button to connect.');
+    const result = await authService.sendMagicLinkWithRole(email, role);
+    if (result.error) {
+      throw new Error(result.error);
+    }
   };
 
   const register = async (data: RegisterData) => {
-    throw new Error('Registration requires Supabase integration. Click the Supabase button to connect.');
+    const result = await authService.signUp(data);
+    if (result.error) {
+      throw new Error(result.error);
+    }
+    if (result.user) {
+      setAuth({
+        user: result.user,
+        isAuthenticated: true,
+        isLoading: false
+      });
+    }
   };
 
   const logout = async () => {
