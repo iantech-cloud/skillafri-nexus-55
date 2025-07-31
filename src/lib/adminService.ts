@@ -50,7 +50,7 @@ export const adminService = {
   },
 
   async deleteUser(userId: string): Promise<void> {
-    return await databaseService.users.delete(userId);
+    await databaseService.users.delete(userId);
   },
 
   // Platform Settings

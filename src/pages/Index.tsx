@@ -1,5 +1,5 @@
 import NavigationHeader from "@/components/NavigationHeader";
-import Hero from "@/components/Hero";
+import Hero from "@/components/sections/Hero";
 import VisionSection from "@/components/VisionSection";
 import ServicesSection from "@/components/ServicesSection";
 import WhyChooseSection from "@/components/WhyChooseSection";

@@ -14,6 +14,15 @@ export interface User {
   avatar?: string;
   createdAt: string;
   isActive: boolean;
+  profileCompleted?: boolean;
+  phoneNumber?: string;
+  country?: string;
+  // Role-specific fields
+  company?: string; // For clients
+  skills?: string; // For freelancers
+  university?: string; // For students
+  studentId?: string; // For students
+  experience?: string; // For freelancers
 }
 
 export interface AuthState {

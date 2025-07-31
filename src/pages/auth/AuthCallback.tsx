@@ -27,7 +27,8 @@ const AuthCallback = () => {
             role: data.session.user.user_metadata?.role || 'client',
             avatar: data.session.user.user_metadata?.avatar_url,
             createdAt: data.session.user.created_at,
-            isActive: true
+            isActive: true,
+            profileCompleted: data.session.user.user_metadata?.profile_completed || false
           };
 
           localStorage.setItem('user', JSON.stringify(user));
@@ -37,9 +38,14 @@ const AuthCallback = () => {
             description: "You've been successfully signed in.",
           });
 
-          // Redirect based on user role
-          const dashboardPath = getDashboardPath(user.role);
-          navigate(dashboardPath);
+          // Check if profile needs completion
+          if (!user.profileCompleted || !user.firstName || !user.lastName) {
+            navigate('/auth/profile-setup');
+          } else {
+            // Redirect based on user role
+            const dashboardPath = getDashboardPath(user.role);
+            navigate(dashboardPath);
+          }
         } else {
           throw new Error('No session found');
         }

@@ -18,7 +18,13 @@ const ProfileSetup = () => {
     firstName: auth.user?.firstName || '',
     lastName: auth.user?.lastName || '',
     phoneNumber: '',
-    country: ''
+    country: '',
+    // Role-specific fields
+    company: '',
+    skills: '',
+    university: '',
+    studentId: '',
+    experience: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,7 +39,7 @@ const ProfileSetup = () => {
 
       // Update local user state
       if (auth.user) {
-        updateUser({ ...auth.user, ...formData });
+        updateUser({ ...auth.user, ...formData, profileCompleted: true });
       }
 
       toast({
@@ -65,11 +71,80 @@ const ProfileSetup = () => {
     }
   };
 
+  const renderRoleSpecificFields = () => {
+    switch (auth.user?.role) {
+      case 'client':
+        return (
+          <div className="space-y-2">
+            <Label htmlFor="company">Company Name</Label>
+            <Input
+              id="company"
+              value={formData.company}
+              onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+              placeholder="Enter your company name"
+              required
+            />
+          </div>
+        );
+      case 'freelancer':
+        return (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="skills">Skills (comma-separated)</Label>
+              <Input
+                id="skills"
+                value={formData.skills}
+                onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
+                placeholder="e.g., React, Node.js, Python"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="experience">Years of Experience</Label>
+              <Input
+                id="experience"
+                value={formData.experience}
+                onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
+                placeholder="e.g., 3"
+                required
+              />
+            </div>
+          </>
+        );
+      case 'student':
+        return (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="university">University/Institution</Label>
+              <Input
+                id="university"
+                value={formData.university}
+                onChange={(e) => setFormData({ ...formData, university: e.target.value })}
+                placeholder="Enter your university name"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="studentId">Student ID</Label>
+              <Input
+                id="studentId"
+                value={formData.studentId}
+                onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
+                placeholder="Enter your student ID"
+              />
+            </div>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/5 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Complete Your Profile</CardTitle>
+          <CardTitle>Complete Your {auth.user?.role?.charAt(0).toUpperCase() + auth.user?.role?.slice(1)} Profile</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -110,6 +185,8 @@ const ProfileSetup = () => {
                 onChange={(e) => setFormData({ ...formData, country: e.target.value })}
               />
             </div>
+
+            {renderRoleSpecificFields()}
             
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? 'Completing...' : 'Complete Profile'}
